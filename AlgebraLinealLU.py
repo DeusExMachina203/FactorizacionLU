@@ -1,8 +1,12 @@
 ﻿from tkinter import*
 import customtkinter
+import moduloMate
 
+n = 4
 #ABRIR PANEL DE FACTORIZACIÓN LU
 def OpenE():
+    values = {'n': 4}
+    global n
     #CREAR VIÑETA
     raizE=customtkinter.CTk()
     raizE.title("Factorización LU")
@@ -10,7 +14,10 @@ def OpenE():
     
     #COMBO BOX
     def combobox_callback(choice):
-        print("combobox dropdown clicked:", choice)
+        global n
+        n = int(choice)
+        print(n)
+        
     combobox = customtkinter.CTkComboBox(master=raizE,values=["4","5","6","7","8","9","10"],command=combobox_callback)
     combobox.set("Ingrese n - [4-10]")  # Valor inicial
 
@@ -18,7 +25,7 @@ def OpenE():
     tituloE = customtkinter.CTkLabel(raizE, text = "Generar matriz aleatoria", font = ("Cascadia Code SemiBold",25))
 
     #BOTON
-    b = Button(raizE,text = 'Iniciar')
+    b = Button(raizE,text = 'Iniciar', command = lambda: moduloMate.generarMatriz(n))
 
     #PACK
     tituloE.pack()
