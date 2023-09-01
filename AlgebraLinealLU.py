@@ -1,4 +1,5 @@
 ﻿from tkinter import*
+import tkinter as tk
 import customtkinter
 import moduloMate
 
@@ -11,13 +12,22 @@ class Table(customtkinter.CTkToplevel):
  
         # code for creating table
         for i in range(total_rows):
-            for j in range(total_columns):
- 
-                self.e = Entry(root, width=16, fg='blue',
-                font=('Arial',10,'bold'))
-                print(i,j)
-                self.e.grid(row=i, column=j)
-                self.e.insert(END, matriz[i][j])
+            for j in range(total_columns+ 2):
+                if i < total_rows and j < total_columns:
+                    self.e = Entry(root, width=16, fg='blue',
+                    font=('Arial',10,'bold'))
+                    self.e.grid(row=i, column=j)
+                    self.e.insert(END, matriz[i][j])
+                else:
+                    self.e = Entry(root, width=16, fg='blue',
+                    font=('Arial',10,'bold'))
+                    self.e.grid(row=i, column=j)
+                    if i == 2 and j == total_columns:
+                        self.e.insert(END, '=')
+                    else:
+                        self.e.insert(END, ' ')
+
+    
 
 #ABRIR VENTANA CON LA MATRIZ GENERADA
 def OpenM(matriz):
@@ -31,6 +41,8 @@ def OpenM(matriz):
     #Matriz
     print('nuevo')
     t = Table(raizM, n, n, matriz)
+    t1 = Table(raizM, n, n, matriz)
+
     #PACK
     #tituloM.pack(pady=20)
     frame.pack()
@@ -50,7 +62,7 @@ def OpenE():
     def combobox_callback(choice):
         global n
         n = int(choice)
-        print(n)
+
         
     combobox = customtkinter.CTkComboBox(master=raizE,values=["4","5","6","7","8","9","10"],command=combobox_callback)
     combobox.set("Ingrese n - [4-10]")  # Valor inicial
@@ -63,7 +75,8 @@ def OpenE():
         global n
         global matriz
         print(n)
-        matriz = moduloMate.generarMatriz(n)
+        matriz =moduloMate.generarMatriz(n)
+        moduloMate.factorizarLU(matriz, n, n)
         OpenM(matriz)
 
     b = Button(raizE,text = 'Iniciar', command = lambda: button_callback())
