@@ -3,6 +3,40 @@ import customtkinter
 import moduloMate
 
 n = 4
+matriz = []
+
+class Table(customtkinter.CTkToplevel):
+    
+    def __init__(self,root, total_rows, total_columns, matriz):
+ 
+        # code for creating table
+        for i in range(total_rows):
+            for j in range(total_columns):
+ 
+                self.e = Entry(root, width=16, fg='blue',
+                font=('Arial',10,'bold'))
+                print(i,j)
+                self.e.grid(row=i, column=j)
+                self.e.insert(END, matriz[i][j])
+
+#ABRIR VENTANA CON LA MATRIZ GENERADA
+def OpenM(matriz):
+    raizM=customtkinter.CTk()
+    raizM.title("Matriz generada")
+    
+    #TITULO
+    tituloM =  customtkinter.CTkLabel(raizM, text = "Matriz generada", font = ("Cascadia Code SemiBold",18))
+    #FRAME
+    frame = customtkinter.CTkFrame(raiz)
+    #Matriz
+    print('nuevo')
+    t = Table(raizM, n, n, matriz)
+    #PACK
+    #tituloM.pack(pady=20)
+    frame.pack()
+    #Mianloop
+    raizM.mainloop()
+
 #ABRIR PANEL DE FACTORIZACIÓN LU
 def OpenE():
     values = {'n': 4}
@@ -25,7 +59,14 @@ def OpenE():
     tituloE = customtkinter.CTkLabel(raizE, text = "Generar matriz aleatoria", font = ("Cascadia Code SemiBold",25))
 
     #BOTON
-    b = Button(raizE,text = 'Iniciar', command = lambda: moduloMate.generarMatriz(n))
+    def button_callback():
+        global n
+        global matriz
+        print(n)
+        matriz = moduloMate.generarMatriz(n)
+        OpenM(matriz)
+
+    b = Button(raizE,text = 'Iniciar', command = lambda: button_callback())
 
     #PACK
     tituloE.pack()
