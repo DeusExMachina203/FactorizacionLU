@@ -18,7 +18,7 @@ def generarMatriz(n):
 		for j in range(0, i):
 			matriz[i][j] = matriz[j][i]
 
-	return matriz;
+	return matriz
 
 def factorizarLU(matriz, columns, rows):
 	matrizU = []
