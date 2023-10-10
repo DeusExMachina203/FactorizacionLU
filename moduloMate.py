@@ -1,4 +1,6 @@
 import random
+from math import isclose
+from icecream import ic
 
 def generarMatriz(n):
 	matriz = []
@@ -22,14 +24,15 @@ def generarMatriz(n):
 
 def factorizarLU(matriz, columns, rows):
 	matrizU = []
+	matrizL = []
+	valoresParaL = []
 	#matrizU = matriz
 	for i in range(rows):
 		vector = []
 		for j in range(columns):
 			vector.append(matriz[i][j])
 		matrizU.append(vector)
-		
-	matrizL = []
+	
 	#generar matriz de identidad primero para la matriz L
 	for i in range(columns):
 		vector=[]
@@ -40,15 +43,33 @@ def factorizarLU(matriz, columns, rows):
 	for i in range(columns):
 		matrizL[i][i] = 1
 
+	#calculamos la matriz U
 	for j in range(columns):
 		divisor=matrizU[j][j]
 		for i in range(j+1, rows):
-			factor = matrizU[i][j] / divisor
-			#print(matrizU[i][j], "/", divisor, "=", factor)
+			factor = matrizU[j][i] / divisor
 			for x in range(columns):
-				print(matrizU[i][x], "-", matrizU[j][x], "*", factor)
-				matrizU[i][x] = matrizU[i][x] - matrizU[j][x] * (factor)
-				
-	for i in range(rows):
-		print(matrizU[i])
+				matrizU[i][x] = matrizU[i][x] - matrizU[j][x] * (matrizU[j][i])/divisor
+				if isclose(matrizU[i][x], 0, abs_tol = 1e-011):
+					matrizU[i][x] = 0 
+					valorParaL = {
+						"factor" : factor,
+						"posFila": i,
+						"posColumna": j
+					}
+					if not valorParaL in valoresParaL:
+						valoresParaL.append(valorParaL)
+
+
+	#ahora insertamos en la matriz L
+	for i in valoresParaL:
+		columna = i['posColumna']
+		fila = i['posFila']
+		matrizL[fila][columna] = i['factor']
+
+	# ic(valoresParaL)
+	# ic(matrizL)
+	# ic(matrizU)
+
+	return matrizL, matrizU
 

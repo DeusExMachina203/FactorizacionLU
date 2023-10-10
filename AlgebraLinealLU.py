@@ -1,18 +1,18 @@
-﻿from tkinter import*
-import tkinter as tk
+﻿from tkinter import *
 import customtkinter
 import moduloMate
+from icecream import ic
 
 n = 4
 matriz = []
 
 class Table(customtkinter.CTkToplevel):
     
-    def __init__(self,root, total_rows, total_columns, matriz):
+    def __init__(self,root, total_rows, total_columns, matriz, matrizL, matrizU):
  
         # code for creating table
         for i in range(total_rows):
-            for j in range(total_columns+ 2):
+            for j in range(total_columns+ 1 + total_columns + 1 + total_columns):
                 if i < total_rows and j < total_columns:
                     self.e = Entry(root, width=16, fg='blue',
                     font=('Arial',10,'bold'))
@@ -24,6 +24,12 @@ class Table(customtkinter.CTkToplevel):
                     self.e.grid(row=i, column=j)
                     if i == 2 and j == total_columns:
                         self.e.insert(END, '=')
+                    elif j > total_columns and j < total_columns*2 + 1:
+                        self.e.insert(END, matrizL[i][total_columns - j])
+                    elif i == 2 and j == total_columns*2 + 1:
+                        self.e.insert(END, '=')
+                    elif j> total_columns *2+1 and j < total_columns *3 + 2:
+                        self.e.insert(END, matrizU[i][j - total_columns*2 - 2])
                     else:
                         self.e.insert(END, ' ')
 
@@ -39,9 +45,7 @@ def OpenM(matriz):
     #FRAME
     frame = customtkinter.CTkFrame(raiz)
     #Matriz
-    print('nuevo')
-    t = Table(raizM, n, n, matriz)
-    t1 = Table(raizM, n, n, matriz)
+    t = Table(raizM, n, n, matriz, matrizL, matrizU)
 
     #PACK
     #tituloM.pack(pady=20)
@@ -74,9 +78,10 @@ def OpenE():
     def button_callback():
         global n
         global matriz
-        print(n)
-        matriz =moduloMate.generarMatriz(n)
-        moduloMate.factorizarLU(matriz, n, n)
+        global matrizL
+        global matrizU
+        matriz = moduloMate.generarMatriz(n)
+        (matrizL, matrizU) = moduloMate.factorizarLU(matriz, n, n)
         OpenM(matriz)
 
     b = Button(raizE,text = 'Iniciar', command = lambda: button_callback())
