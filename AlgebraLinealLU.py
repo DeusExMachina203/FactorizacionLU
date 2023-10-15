@@ -6,6 +6,16 @@ n = 4
 matriz = []
 
 
+class OneTable(customtkinter.CTkToplevel):
+    def __init__(self, root, total_rows, total_columns, matriz):
+        for i in range(total_rows):
+            for j in range(total_columns):
+                    self.e = Entry(root, width=10, fg='blue',
+                                   font=('Arial', 20, 'bold'))
+                    self.e.grid(row=i, column=j)
+                    self.e.insert(END, round(matriz[i][j],5))
+
+#aumentar tamaño
 class Table(customtkinter.CTkToplevel):
     def __init__(self, root, total_rows, total_columns, matriz, matrizL, matrizU,matrizP,IsPTLU):
         if IsPTLU:
@@ -60,23 +70,65 @@ class Table(customtkinter.CTkToplevel):
                             self.e.insert(END, ' ')
 
 
-# ABRIR VENTANA CON LA MATRIZ GENERADA
+
+
+
 def OpenM(matriz):
+
     raizM = customtkinter.CTk()
+    raizM.geometry("1260x720")
+    #3 frames iniciales
+
+    VistaTab=customtkinter.CTkTabview(raizM,height=(1))
+    VistaTab.add("Matriz (A)")
+    VistaTab.set("Matriz (A)")
+    
+    #Parte 3 matrices
+    frameAll = customtkinter.CTkFrame(raizM)
+
+
+      #Parte 3 matriz Permutacióin
     if (IsPTLU):
         raizM.title("Matriz generada (  A  = P^T * L * U  )")
+
+        VistaTab.add("Matriz (P)")
+        VistaTab.add("Matriz (L)")
+        VistaTab.add("Matriz (U)")
+
+        tituloFactorizacion = customtkinter.CTkLabel(raizM, text="Factorización PA=LU ( A = P^T * L * U)", font=("Cascadia Code SemiBold", 18))
+        # PACK
+        tituloFactorizacion.pack(pady=20)
+        frameAll.pack(pady=20)
+        VistaTab.pack(pady=10)
+
+        # Matriz
+        tM = Table(frameAll, n, n, matriz, matrizL, matrizU,matrizP,IsPTLU)
+        tO = OneTable(VistaTab.tab("Matriz (A)"), n, n, matriz)
+        tP=  OneTable(VistaTab.tab("Matriz (P)"), n, n, matrizP)
+        tL = OneTable(VistaTab.tab("Matriz (L)"), n, n, matrizL)
+        tU = OneTable(VistaTab.tab("Matriz (U)"), n, n, matrizU)
     else:
         raizM.title("Matriz generada (  A  = L * U  )")
+        tituloFactorizacion = customtkinter.CTkLabel(raizM, text="Factorización LU ( A = L * U)", font=("Cascadia Code SemiBold", 18))
+        
+        VistaTab.add("Matriz (L)")
+        VistaTab.add("Matriz (U)")
+        
+        # PACK
+        tituloFactorizacion.pack(pady=20)
+        frameAll.pack(pady=20)
+        VistaTab.pack(pady=10)
 
-    # TITULO
-    tituloM = customtkinter.CTkLabel(raizM, text="Matriz generada", font=("Cascadia Code SemiBold", 18))
-    # FRAME
+        # Matriz
+        tM = Table(frameAll, n, n, matriz, matrizL, matrizU,matrizP,IsPTLU)
+        tO = OneTable(VistaTab.tab("Matriz (A)"), n, n, matriz)
+        tL = OneTable(VistaTab.tab("Matriz (L)"), n, n, matrizL)
+        tU = OneTable(VistaTab.tab("Matriz (U)"), n, n, matrizU)
 
-    # Matriz
-    tM = Table(raizM, n, n, matriz, matrizL, matrizU,matrizP,IsPTLU)
 
-    # PACK
-    # tituloM.pack(pady=20)
+
+
+
     # Mianloop
     raizM.mainloop()
 
@@ -118,12 +170,24 @@ def OpenE():
         global matrizP
         global IsPTLU
         matriz = moduloMate.generarMatriz(n) #generar matriz
-        IsPTLU, m, matrizP = moduloMate.factorizarP(matriz,n) #Realizar proceso IsPTLU
-        #Determinar si es necesario cambiar una fila para la factorización
-        if (IsPTLU):#Si es necesario pasar como matriz para factorizar P*A
-            (matrizL, matrizU) = moduloMate.factorizarLU(m, n, n)
-        else: #Si no es necesario continuar con factorizar A
+
+
+        try: #EMPEZAR REALIZANDO FACTORIZACION LU
             (matrizL, matrizU) = moduloMate.factorizarLU(matriz, n, n)
+            
+            #declarar matriz P como default
+            matrizP = [[0] * n for _ in range(n)]
+            for i in range(n):
+                matrizP[i][i] = 1  # declarar como matriz identidad
+            IsPTLU=False;
+
+
+        except: #SI NO ES POSIBLE REALIZARSE(By Division by zero) RECURRIR A LA FACTORIZACIÓN PA=LU
+            print("NO ES POSIBLE REALIZAR FACTORIZACIÓN LU, PROCEDIENDO A CAMBIAR FILAS")
+            m, matrizP = moduloMate.factorizarP(matriz,n)
+            (matrizL, matrizU) = moduloMate.factorizarLU(m, n, n)
+            IsPTLU=True;
+
         OpenM(matriz)
 
     b = Button(raizE, text='Iniciar', command=lambda: button_callback())
